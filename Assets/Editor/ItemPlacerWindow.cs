@@ -96,7 +96,7 @@ public class ItemPlacerWindow : EditorWindow
             //si el prefab exite usara su nombre sino existe exrbira el texto falta
             labels[i] = prefabLibrary[i] != null ? prefabLibrary[i].name : "Falta";
         }
-        aqui devuelve la lista de los nombres en el dropdown de la flecha
+        //aqui devuelve la lista de los nombres en el dropdown de la flecha
         return labels;
     }
 
