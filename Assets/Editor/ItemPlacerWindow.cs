@@ -21,7 +21,7 @@ public class ItemPlacerWindow : EditorWindow
     {
         GetWindow<ItemPlacerWindow>("Item Placer Tool");
     }
-    
+
     //Sirve para dibujar cuando la ventana esta abierta
     private void OnEnable()
     {
@@ -77,7 +77,7 @@ public class ItemPlacerWindow : EditorWindow
         // Objeto padre donde se crean los prefabs que van a instanciarse
         spawnParent = (Transform)EditorGUILayout.ObjectField("Padre", spawnParent, typeof(Transform), true);
 
-        //usar el objeto seleccionado de los objetos como padre 
+        //usar el objeto seleccionado de los objetos como padre
         if (GUILayout.Button("Usar seleccionado como padre"))
         {
             spawnParent = Selection.activeTransform;
@@ -120,15 +120,18 @@ public class ItemPlacerWindow : EditorWindow
             }
         }
 
-        // DRAG PARA ROTAR
+        //Esto hace que cuando mentienes pulsado y arrastras el raton rota la ultima instancia que es prefab
         if (e.type == EventType.MouseDrag && e.button == 0 && lastInstance != null && isRotating)
         {
+            //guardar esta accion para que puedas deshacer el cambio con control z de la rotacion o lo que sea el cambio
             Undo.RecordObject(lastInstance.transform, "Rotar");
+
+            //rotar el objeto segun el movimiento horitzonatal del propio raton
             lastInstance.transform.Rotate(Vector3.up, -e.delta.x * 0.5f);
             e.Use();
         }
 
-        // SOLTAR
+        //cuando sueltas el boton de raton se deja rotar
         if (e.type == EventType.MouseUp && e.button == 0)
         {
             isRotating = false;
@@ -137,24 +140,28 @@ public class ItemPlacerWindow : EditorWindow
 
     private void PlaceInstance(Vector3 position)
     {
+        //aqui obtienes el prefab que esta seleccionado en la biblioteca
         GameObject prefab = prefabLibrary[activePrefabIndex];
+        //sino existe el prefab no podra hacer nada
         if (prefab == null) return;
 
-        // INSTANCIAR
+        //intanciara unos de los prefabs en la propia escena
         GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
-        
-        // UNDO
+
+        //regsitra la creacion de deshacerse con ctrl+z
         Undo.RegisterCreatedObjectUndo(instance, "Colocar objeto");
 
         // PADRE
+        //si no esta defnido como padre asinga la instancia como hijo en el soporte de undo
         if (spawnParent != null)
         {
             Undo.SetTransformParent(instance.transform, spawnParent, "Colocar objeto");
         }
 
-        // POSICIÓN
+        //coloca la instancia en la posicion indiciada por el raton
         instance.transform.position = position;
 
+        //guarda la ultima instancia que permite rotaciones posteriores del raton
         lastInstance = instance;
     }
 }
